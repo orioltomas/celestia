@@ -1,5 +1,5 @@
-import type { CalculateTrip } from "./calculate-trip"
-import type { Command } from "./command"
+import type { CalculateTrip } from './calculate-trip'
+import type { Command } from './command'
 import type { Trip } from '@/app/trip'
 
 export class CalculateTripCommand implements Command<CalculateTrip, Trip> {
@@ -16,7 +16,6 @@ export class CalculateTripCommand implements Command<CalculateTrip, Trip> {
         throw new Error('Failed to calculate trip')
       }
 
-      const data = (await response.json()) as Trip
-      return data
+      return (await response.json()) as Trip
     }
 }
