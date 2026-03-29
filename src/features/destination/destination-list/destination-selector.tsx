@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { AddDestinationForm } from '@/components/add-destination-form'
-import type { Destination } from '@/app/destination'
-import { getDestinationsQuery, useCaseService } from '@/app/container'
+import { Card, CardContent } from '@/core/components/ui/card'
+import { Button } from '@/core/components/ui/button'
+import { Badge } from '@/core/components/ui/badge'
+import { DestinationCreateForm } from '@/features/destination/destination-create/destination-create-form'
+import type { Destination } from '@/features/destination/destination'
+import { getDestinationsQuery, useCaseService } from '@/core/dependency-injection/container'
 
 import type { ShipType } from '@/app/ship-type'
 
@@ -18,12 +18,12 @@ export function DestinationSelector() {
   const [error, setError] = useState<string | null>(null)
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null)
   const [selectedShip, setSelectedShip] = useState<ShipType>('classic')
-  const [showAddForm, setShowAddForm] = useState(false)
+  const [showCreateForm, setShowCreateForm] = useState(false)
 
   useEffect(() => {
     const fetchDestinations = async () => {
       try {
-        const destinations = await useCaseService.execute(getDestinationsQuery)
+        const destinations = await useCaseService.handle(getDestinationsQuery)
         setDestinations(destinations)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -42,12 +42,12 @@ export function DestinationSelector() {
     }
   }
 
-  const handleDestinationAdded = async () => {
-    setShowAddForm(false)
+  const handleDestinationCreated = async () => {
+    setShowCreateForm(false)
     setLoading(true)
     // Refresh destinations list
     try {
-      const destinations = await useCaseService.execute(getDestinationsQuery)
+      const destinations = await useCaseService.handle(getDestinationsQuery)
       setDestinations(destinations)
     } catch (err) {
       console.error('Failed to refresh destinations:', err)
@@ -56,8 +56,8 @@ export function DestinationSelector() {
     }
   }
 
-  const handleCancelAdd = () => {
-    setShowAddForm(false)
+  const handleCancelCreate = () => {
+    setShowCreateForm(false)
   }
 
   if (loading) {
@@ -82,10 +82,10 @@ export function DestinationSelector() {
     )
   }
 
-  if (showAddForm) {
+  if (showCreateForm) {
     return (
       <div className="space-y-6">
-        <AddDestinationForm onDestinationAdded={handleDestinationAdded} onCancel={handleCancelAdd} />
+        <DestinationCreateForm onDestinationCreated={handleDestinationCreated} onCancel={handleCancelCreate} />
       </div>
     )
   }
@@ -97,8 +97,8 @@ export function DestinationSelector() {
           <h2 className="text-2xl font-bold text-foreground">
             <span className="text-white">/</span>Select Destination
           </h2>
-          <Button onClick={() => setShowAddForm(true)} variant="outline" className="hover:bg-accent/20">
-            + Add New Destination
+          <Button onClick={() => setShowCreateForm(true)} variant="outline" className="hover:bg-accent/20">
+            + Create New Destination
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

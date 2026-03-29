@@ -57,11 +57,11 @@ test.describe('Destinations', () => {
     // Wait for page to load
     await expect(page.locator('[data-testid="destination-card"]').first()).toBeVisible({ timeout: 10000 })
 
-    // Click Add New Destination button
-    await page.locator('button', { hasText: 'Add New Destination' }).click()
+    // Click Create New Destination button
+    await page.locator('button', { hasText: 'Create New Destination' }).click()
 
-    // Check add destination form is displayed
-    await expect(page.locator('text=/Add New Destination')).toBeVisible()
+    // Check create destination form is displayed
+    await expect(page.locator('text=/Create New Destination')).toBeVisible()
 
     // Create unique destination name using timestamp to ensure idempotency
     const timestamp = Date.now()

@@ -1,19 +1,17 @@
-'use client'
-
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { createDestinationCommand, useCaseService } from '@/app/container'
+import { Card, CardContent, CardHeader, CardTitle } from '@/core/components/ui/card'
+import { Button } from '@/core/components/ui/button'
+import { Input } from '@/core/components/ui/input'
+import { Textarea } from '@/core/components/ui/textarea'
+import { Label } from '@/core/components/ui/label'
+import { createDestinationCommand, useCaseService } from '@/core/dependency-injection/container'
 
-interface AddDestinationFormProps {
-  onDestinationAdded: () => void
+interface DestinationCreateFormProps {
+  onDestinationCreated: () => void
   onCancel: () => void
 }
 
-export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinationFormProps) {
+export function DestinationCreateForm({ onDestinationCreated, onCancel }: DestinationCreateFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     distance: '',
@@ -28,6 +26,10 @@ export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinat
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setError(null)
+  }
+
+  function handleError(message?: string) {
+    setError(message ?? 'An error occurred');
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +47,7 @@ export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinat
         !formData.advancedTravelTime ||
         !formData.emoji
       ) {
-        throw new Error('All fields are required')
+        handleError('All fields are required');
       }
 
       const distance = parseFloat(formData.distance)
@@ -53,19 +55,19 @@ export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinat
       const advancedTravelTime = parseInt(formData.advancedTravelTime)
 
       if (isNaN(distance) || distance <= 0) {
-        throw new Error('Distance must be a positive number')
+        handleError('Distance must be a positive number')
       }
 
       if (isNaN(classicTravelTime) || classicTravelTime <= 0) {
-        throw new Error('Classic travel time must be a positive number')
+        handleError('Classic travel time must be a positive number')
       }
 
       if (isNaN(advancedTravelTime) || advancedTravelTime <= 0) {
-        throw new Error('Advanced travel time must be a positive number')
+        handleError('Advanced travel time must be a positive number')
       }
 
       if (advancedTravelTime >= classicTravelTime) {
-        throw new Error('Advanced travel time must be less than classic travel time')
+        handleError('Advanced travel time must be less than classic travel time')
       }
 
       const newDestination = {
@@ -79,11 +81,9 @@ export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinat
         emoji: formData.emoji.trim(),
       }
 
-      await useCaseService.execute(createDestinationCommand, newDestination)
+      await useCaseService.handle(createDestinationCommand, newDestination)
 
-      onDestinationAdded()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      onDestinationCreated()
     } finally {
       setLoading(false)
     }
@@ -93,7 +93,7 @@ export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinat
     <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-xl flex items-center gap-2">
-          <span className="text-white">/</span>Add New Destination
+          <span className="text-white">/</span>Create New Destination
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -183,7 +183,7 @@ export function AddDestinationForm({ onDestinationAdded, onCancel }: AddDestinat
               disabled={loading}
               className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
             >
-              {loading ? 'Adding...' : 'Add Destination'}
+              {loading ? 'Creating...' : 'Create Destination'}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} disabled={loading} className="flex-1">
               Cancel

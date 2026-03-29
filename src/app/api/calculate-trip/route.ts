@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { promises as fs } from 'fs'
-import type { Destination } from '@/app/destination'
-import type { CalculateTrip } from '@/app/calculate-trip'
-import type { Trip } from '@/app/trip'
+import type { Destination } from '@/features/destination/destination'
+import type { CalculateTrip } from '@/features/trip/calculate-trip'
+import type { Trip } from '@/features/trip/trip'
 
 export async function POST(request: NextRequest) {
   try {
