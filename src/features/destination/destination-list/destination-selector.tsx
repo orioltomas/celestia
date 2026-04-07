@@ -15,7 +15,7 @@ export function DestinationSelector() {
   const router = useRouter()
   const [destinations, setDestinations] = useState<Destination[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error] = useState<string | null>(null)
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null)
   const [selectedShip, setSelectedShip] = useState<ShipType>('classic')
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -25,8 +25,6 @@ export function DestinationSelector() {
       try {
         const destinations = await useCaseService.handle(getDestinationsQuery)
         setDestinations(destinations)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
         setLoading(false)
       }
