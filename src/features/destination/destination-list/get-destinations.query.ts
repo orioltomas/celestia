@@ -1,15 +1,12 @@
 import type { Destination } from "../destination";
 import type { Query } from '@/core/use-cases/query'
+import type { DestinationRepository } from '@/features/destination/destination.repository'
 
 
 export class GetDestinationsQuery implements Query<Destination[]> {
+    constructor(private readonly destinationRepository: DestinationRepository) {}
+
     async handle(): Promise<Destination[]> {
-        const response = await fetch('/api/destinations')
-        if (!response.ok) {
-          throw new Error('Failed to fetch destinations')
-        }
-        const data = await response.json()
-        console.log('data', data)
-        return data;
+        return this.destinationRepository.findAll()
     }
 }

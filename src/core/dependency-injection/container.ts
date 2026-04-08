@@ -6,10 +6,18 @@ import { LoggerMiddleware } from '@/core/middlewares/logger.middleware'
 import { EmptyMiddleware } from '@/core/middlewares/empty.middleware'
 import { ErrorMiddleware } from '@/core/middlewares/error.middleware'
 import { EventEmitter } from '@/core/event-emitter/event-emitter'
+import { DestinationApiRepository } from '@/features/destination/destination.api-repository'
+import { TripApiRepository } from '@/features/trip/trip.api-repository'
+import { HttpClient } from '@/core/http-client/http-client'
 
-export const createDestinationCommand = new CreateDestinationCommand()
-export const getDestinationsQuery = new GetDestinationsQuery()
-export const calculateTripCommand = new CalculateTripCommand()
+export const httpClient = new HttpClient(process.env['NEXT_PUBLIC_BASE_API_URL']!)
+
+export const destinationApiRepository = new DestinationApiRepository(httpClient)
+export const createDestinationCommand = new CreateDestinationCommand(destinationApiRepository)
+export const getDestinationsQuery = new GetDestinationsQuery(destinationApiRepository)
+
+export const tripApiRepository = new TripApiRepository(httpClient)
+export const calculateTripCommand = new CalculateTripCommand(tripApiRepository)
 export const eventEmitter = new EventEmitter()
 
 export const useCaseService = new UseCaseService([new LoggerMiddleware(), new ErrorMiddleware(eventEmitter), new EmptyMiddleware()])

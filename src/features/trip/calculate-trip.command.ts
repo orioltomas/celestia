@@ -1,21 +1,12 @@
 import type { CalculateTrip } from './calculate-trip'
 import type { Trip } from '@/features/trip/trip'
 import type { Command } from '@/core/use-cases/command'
+import type { TripRepository } from '@/features/trip/trip.repository'
 
 export class CalculateTripCommand implements Command<CalculateTrip, Trip> {
-    async handle(calculateTrip: CalculateTrip): Promise<Trip> {
-      const response = await fetch('/api/calculate-trip', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(calculateTrip),
-      })
+  constructor(private readonly tripRepository: TripRepository) {}
 
-      if (!response.ok) {
-        throw new Error('Failed to calculate trip')
-      }
-
-      return (await response.json()) as Trip
-    }
+  async handle(calculateTrip: CalculateTrip): Promise<Trip> {
+    return await this.tripRepository.calculateTrip(calculateTrip)
+  }
 }
